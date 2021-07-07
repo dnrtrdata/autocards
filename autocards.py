@@ -67,7 +67,7 @@ could be made from it:{text}\n")
         tqdm.write(f"Added {diff} qa pair (total = {cur_n})")
 
     def _sanitize_text(self, text):
-        # remove wikipedia style citation
+        "remove wikipedia style citation"
         return re.sub(r"\[\d*\]", "", text)
 
     def consume_var(self, text, title="", per_paragraph=False):
