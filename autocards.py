@@ -256,12 +256,9 @@ the title of the article and not the url")
 
         df = self.pandas_output(prefix)
 
-        def _remove_commas(string):
-            return string.replace(",", r"\,")
-
         for i in df.index:
             for c in df.columns:
-                df.loc[i, c] = _remove_commas(df.loc[i, c])
+                df.loc[i, c] = str(df.loc[i, c]).replace(",", r"\,")
 
         df.to_csv(filename)
         print(f"Done writing qa pairs to {filename}")
