@@ -274,14 +274,3 @@ the title of the article and not the url")
         self.pandas_output(prefix).to_json(filename)
         print(f"Done writing qa pairs to {filename}")
 
-
-#def _debug_signal_handler(signal, frame):
-#    """
-#    According to stackoverflow, this allows to make the script interruptible
-#    and resume it at will (ctrl+C / c)
-#    https://stackoverflow.com/questions/10239760/interrupt-pause-running-python-program-in-pdb/39478157#39478157
-#    """
-#    pdb.set_trace()
-#
-#
-#signal.signal(signal.SIGINT, _debug_signal_handler)
