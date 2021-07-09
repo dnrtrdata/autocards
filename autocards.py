@@ -195,7 +195,7 @@ the title of the article and not the url")
             title = soup.find_all('title').text
         title.strip()
         if title == "":
-            print(f"Couldn't find title of the page")
+            print("Couldn't find title of the page")
             title = source
 
         valid_sections = []  # remove text sections that are too short:
@@ -293,4 +293,3 @@ the title of the article and not the url")
 
         self.pandas_output(prefix).to_json(filename)
         print(f"Done writing qa pairs to {filename}")
-
