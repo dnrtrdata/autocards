@@ -246,7 +246,7 @@ the title of the article and not the url")
                     df.loc[i, c] = "Error"
         return df
 
-    def csv_export(self, filename, prefix='', jeopardy=False):
+    def to_csv(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as csv file"
         if len(self.qa_pairs) == 0:
             print("No qa generated yet!")
@@ -266,7 +266,7 @@ the title of the article and not the url")
         df.to_csv(filename)
         print(f"Done writing qa pairs to {filename}")
 
-    def json_export(self, filename, prefix='', jeopardy=False):
+    def to_json(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as json file"
         if len(self.qa_pairs) == 0:
             print("No qa generated yet!")
