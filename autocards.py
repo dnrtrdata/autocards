@@ -67,8 +67,15 @@ could be made from it:{text}\n")
         tqdm.write(f"Added {diff} qa pair (total = {cur_n})")
 
     def _sanitize_text(self, text):
-        # remove wikipedia style citation
-        return re.sub(r"\[\d*\]", "", text)
+        "correct common errors in text"
+        # wikipedia style citation:
+        text = re.sub(r"\[\d*\]", "", text)
+        # extra spaces
+        text = re.sub("\s\s*", " ", text)
+        # new lines
+        text = re.sub("\n", ".", text)
+        text = re.sub("..*", ".", text)
+        return text
 
     def consume_var(self, text, title="", per_paragraph=False):
         "Take text as input and create qa pairs"
@@ -80,7 +87,6 @@ could be made from it:{text}\n")
                                   unit="paragraph"):
                 self._call_qg(paragraph, title)
         else:
-            text = text.replace('\n\n', '. ').replace('..', '.')
             text = self._sanitize_text(text)
             self._call_qg(text, title)
 
@@ -129,7 +135,6 @@ the title of the article and not the url")
         for page in pdf.pages:
             full_text.append(page.extractText())
         text = " ".join(full_text)
-        text = text.replace("  ", "")
         text = self._sanitize_text(text)
 
         self.consume_var(text, title, per_paragraph)
