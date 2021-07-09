@@ -9,6 +9,7 @@
 * `cd Autocards`
 * `pip install -r ./requirements.txt`
 * run a python console: `ipython3`
+* install punkt by running `!python -m nltk.downloader punkt`
 
 ### Autocards usage
 ```
