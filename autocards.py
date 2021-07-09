@@ -75,7 +75,8 @@ could be made from it:{text}\n")
         text = re.sub("..*", ".", text)
         return text
 
-    def consume_var(self, text, title="untitled variable", per_paragraph=False):
+    def consume_var(self, text, title="untitled variable",
+                    per_paragraph=False):
         "Take text as input and create qa pairs"
         text = text.replace('\xad ', '')
 
