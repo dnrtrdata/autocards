@@ -75,7 +75,7 @@ could be made from it:{text}\n")
         text = re.sub("..*", ".", text)
         return text
 
-    def consume_var(self, text, title="", per_paragraph=False):
+    def consume_var(self, text, title="untitled variable", per_paragraph=False):
         "Take text as input and create qa pairs"
         text = text.replace('\xad ', '')
 
@@ -88,7 +88,7 @@ could be made from it:{text}\n")
             text = self._sanitize_text(text)
             self._call_qg(text, title)
 
-    def consume_user_input(self, title=""):
+    def consume_user_input(self, title="untitled user input"):
         "Take user input and create qa pairs"
         user_input = input("Enter your text below then press Enter (press\
  enter twice to validate input):\n>")
