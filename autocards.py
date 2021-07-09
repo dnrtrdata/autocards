@@ -146,8 +146,9 @@ the title of the article and not the url")
             print(f"File not found at {filepath}")
         text = open(filepath).read()
         text = self._sanitize_text(text)
+        filename = str(filepath).split("/")[-1]
         self.consume_var(text,
-                         filepath,
+                         filename,
                          per_paragraph=per_paragraph)
 
     def consume_epub(self, filepath, title="untitled epub file"):
