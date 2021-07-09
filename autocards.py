@@ -14,6 +14,7 @@ import wikipedia
 from wikipedia.exceptions import PageError
 from bs4 import BeautifulSoup
 from pprint import pprint
+from ebooklib import epub
 
 # otherwise csv and json outputs contain a warning string
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
@@ -66,13 +67,12 @@ could be made from it:{text}\n")
 
     def _sanitize_text(self, text):
         "correct common errors in text"
+        # occurs sometimes in epubs apparently:
+        text = text.replace("\xa0", " ")
         # wikipedia style citation:
         text = re.sub(r"\[\d*\]", "", text)
-        # extra spaces
-        text = re.sub("\s\s*", " ", text)
-        # new lines
-        text = re.sub("\n", ".", text)
-        text = re.sub("..*", ".", text)
+        # extra spaces:
+        text = re.sub(r"\s\s*", " ", text)
         return text
 
     def consume_var(self, text, title="untitled variable",
@@ -86,6 +86,8 @@ could be made from it:{text}\n")
                                   unit="paragraph"):
                 self._call_qg(paragraph, title)
         else:
+            text = re.sub(r"\n\n*", ".", text)
+            text = re.sub(r"\.\.*", ".", text)
             text = self._sanitize_text(text)
             self._call_qg(text, title)
 
@@ -147,6 +149,25 @@ the title of the article and not the url")
         self.consume_var(text,
                          filepath,
                          per_paragraph=per_paragraph)
+
+    def consume_epub(self, filepath, title="untitled epub file"):
+        "Take an epub file as input and create qa pairs"
+        book = epub.read_epub(filepath)
+
+        # fetches the longest item from the epub
+        # as that is usually the main text
+        parts = [x.content for x in book.get_items()]
+        sizes = [len(x) for x in parts]
+        longest = max(sizes)
+        longest_item = [x for x in parts if len(x) == longest][0]
+        text = longest_item
+        text = BeautifulSoup(text, "lxml").text
+
+        # make paragraph limitation as expected in self.consume_var:
+        text = text.replace("\n", "\n\n")
+        text = re.sub("\n\n\n*", "\n\n", text)
+        text = self._sanitize_text(text)
+        self.consume_var(text, title, per_paragraph=True)
 
     def consume_web(self, source, mode="url", element="p"):
         "Take html file (local or via url) and create qa pairs"
