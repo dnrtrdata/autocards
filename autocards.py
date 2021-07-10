@@ -26,9 +26,9 @@ class Autocards:
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
                               ans_model='valhalla/t5-small-qa-qg-hl')
-        self.qa_pairs = []
+        self.qa_dict = []
         global n, cur_n
-        n = len(self.qa_pairs)
+        n = len(self.qa_dict)
         cur_n = n
 
     def _call_qg(self, text, title):
@@ -38,26 +38,26 @@ class Autocards:
         title, source text)
         """
         try:
-            self.qa_pairs += self.qg(text)
+            self.qa_dict += self.qg(text)
         except IndexError:
             print(f"\nSkipping section because no cards \
 could be made from it:{text}\n")
-            self.qa_pairs.append({"question": "skipped",
+            self.qa_dict.append({"question": "skipped",
                                   "answer": "skipped"})
 
         global n, cur_n
-        cur_n = len(self.qa_pairs)
+        cur_n = len(self.qa_dict)
         diff = cur_n - n
-        n = len(self.qa_pairs)
+        n = len(self.qa_dict)
 
         cur_time = time.asctime()
         for i in range(diff):
             i += 1
-            cloze = self.qa_pairs[-i]['question']\
+            cloze = self.qa_dict[-i]['question']\
                 + "<br>{{c1::"\
-                + self.qa_pairs[-i]['answer']\
+                + self.qa_dict[-i]['answer']\
                 + "}}"
-            self.qa_pairs[-i] = {**self.qa_pairs[-i],
+            self.qa_dict[-i] = {**self.qa_dict[-i],
                                  "clozed_text": cloze,
                                  "creation_time": cur_time,
                                  "title": title,
@@ -220,7 +220,7 @@ the title of the article and not the url")
 
     def clear_qa(self):
         "Delete currently stored qa pairs"
-        self.qa_pairs = []
+        self.qa_dict = []
         global n, cur_n
         n = 0
         cur_n = n
@@ -229,12 +229,12 @@ the title of the article and not the url")
         "Return qa pairs to the user"
         if prefix != "" and prefix[-1] != ' ':
             prefix += ' '
-        if len(self.qa_pairs) == 0:
+        if len(self.qa_dict) == 0:
             print("No qa generated yet!")
             return None
 
         res = []
-        for qa_pair in self.qa_pairs:
+        for qa_pair in self.qa_dict:
             if jeopardy:
                 string = f"\"{prefix}{qa_pair['answer']}\",\"\
 {qa_pair['question']}\""
@@ -253,12 +253,12 @@ the title of the article and not the url")
         pprint(self.string_output(*args, **kwargs))
 
     def pandas_output(self, prefix=''):
-        if len(self.qa_pairs) == 0:
+        if len(self.qa_dict) == 0:
             print("No qa generated yet!")
             return None
         "Output a Pandas DataFrame containing qa pairs and metadata"
-        df = pd.DataFrame(columns=list(self.qa_pairs[0].keys()))
-        for qa in self.qa_pairs:
+        df = pd.DataFrame(columns=list(self.qa_dict[0].keys()))
+        for qa in self.qa_dict:
             df = df.append(qa, ignore_index=True)
         for i in df.index:
             for c in df.columns:
@@ -269,7 +269,7 @@ the title of the article and not the url")
 
     def to_csv(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as csv file"
-        if len(self.qa_pairs) == 0:
+        if len(self.qa_dict) == 0:
             print("No qa generated yet!")
             return None
         if prefix != "" and prefix[-1] != ' ':
@@ -286,7 +286,7 @@ the title of the article and not the url")
 
     def to_json(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as json file"
-        if len(self.qa_pairs) == 0:
+        if len(self.qa_dict) == 0:
             print("No qa generated yet!")
             return None
         if prefix != "" and prefix[-1] != ' ':
