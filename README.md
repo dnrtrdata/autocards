@@ -27,7 +27,7 @@ a.consume_web(source, mode="url", element="p")
 # =>  * element is the html element, like p for paragraph
 #     * mode can be "url" or "local"
 
-# three ways to get the results back:
+# three ways to get the results back: printing, pandas, export
 out = a.string_output(prefix='', jeopardy=False)
 #    =>  * prefix is a text that will be appended before the qa
 #        * jeopardy is when switching question and answer
