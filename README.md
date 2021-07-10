@@ -1,14 +1,14 @@
 # Autocards
 * Automatically create flashcards from user input, PDF files, wikipedia summary, webpages, and more!
-* To get a real world example, you can take a look at the complete output on [this article](https://www.biography.com/political-figure/philip-ii-of-macedon) can be found [in this folder](./output_example/). Nothing has been manually altered, it's the direct output.
-* Code is PEP compliant and all docstrings are written, hence contributions and PR are extremely appreciated
+* To see a real world example, the complete output of [this article](https://www.biography.com/political-figure/philip-ii-of-macedon) can be found [in this folder](./output_example/). It's the direct output with no post processing whatsoever.
+* Code is PEP compliant and with docstrings. Contributions and PR are extremely appreciated
 * Learn more by reading [the official write-up](https://psionica.org/docs/lab/autocards/).
 
 ## Install guide:
 * `git clone https//github.com/Psionica/Autocards`
 * `cd Autocards`
 * `pip install -r ./requirements.txt`
-* run a python console: `ipython3`
+* open a python console: `ipython3`
 * install punkt by running `!python -m nltk.downloader punkt`
 
 ### Autocards usage
