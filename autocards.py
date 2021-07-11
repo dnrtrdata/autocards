@@ -14,7 +14,7 @@ import wikipedia
 from wikipedia.exceptions import PageError
 from bs4 import BeautifulSoup
 from pprint import pprint
-from ebooklib import epub
+from epub_conversion.utils import open_book, convert_epub_to_lines
 
 # otherwise csv and json outputs contain a warning string
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
@@ -153,19 +153,14 @@ the title of the article and not the url")
 
     def consume_epub(self, filepath, title="untitled epub file"):
         "Take an epub file as input and create qa pairs"
-        book = epub.read_epub(filepath)
-
-        # fetches the longest item from the epub
-        # as that is usually the main text
-        parts = [x.content for x in book.get_items()]
-        sizes = [len(x) for x in parts]
-        longest = max(sizes)
-        longest_item = [x for x in parts if len(x) == longest][0]
-        text = longest_item
-        text = BeautifulSoup(text, "lxml").text
-
+        book = open_book(filepath)
+        text = " ".join(convert_epub_to_lines(book))
+        text = re.sub("<.*?>", "", text)
+        text = re.sub("&nbsp;", " ", text)
+        text = re.sub("&dash;", "-", text)
+        text = re.sub("&.*?;", " ", text)
         # make paragraph limitation as expected in self.consume_var:
-        text = text.replace("\n", "\n\n")
+        text = text.replace("\r", "\n\n")
         text = re.sub("\n\n\n*", "\n\n", text)
         text = self._sanitize_text(text)
         self.consume_var(text, title, per_paragraph=True)
