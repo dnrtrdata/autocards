@@ -23,10 +23,17 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 class Autocards:
     def __init__(self):
         print("Loading backend...")
+        self.cloze_type = cloze_type
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
                               ans_model='valhalla/t5-small-qa-qg-hl')
         self.qa_dict = []
+
+        if self.cloze_type not in ["anki", "SM"]:
+            print("Invalid cloze type, must be either 'anki' or \
+'SM'")
+            raise SystemExit()
+
         global n, cur_n
         n = len(self.qa_dict)
         cur_n = n
@@ -43,7 +50,8 @@ class Autocards:
             print(f"\nSkipping section because no cards \
 could be made from it:{text}\n")
             self.qa_dict.append({"question": "skipped",
-                                  "answer": "skipped"})
+                                 "answer": "skipped",
+                                 "note_type": "basic"})
 
         global n, cur_n
         cur_n = len(self.qa_dict)
@@ -53,10 +61,23 @@ could be made from it:{text}\n")
         cur_time = time.asctime()
         for i in range(diff):
             i += 1
-            cloze = self.qa_dict[-i]['question']\
-                + "<br>{{c1::"\
-                + self.qa_dict[-i]['answer']\
-                + "}}"
+            if self.qa_dict[-i]["note_type"] == "cloze":
+                if self.cloze_type == "anki":
+                    cl_str = self.qa_dict[-i]["cloze"]
+                    cl_str = cl_str.replace("<hl>", "{{c1::", 1)
+                    cl_str = cl_str.replace("<hl>", "}}", 1)
+                    cl_str = cl_str.replace("}} ", "}}")
+                    cl_str = cl_str.replace(" {{c1::", "{{c1::")
+                    self.qa_dict[-i]["cloze"] = cl_str
+                if self.cloze_type == "SM":
+                    # TODO
+                    print("SM cloze not yet implemented")
+                    raise SystemExit()
+
+            if self.qa_dict[-i]["note_type"] == "basic":
+                clozed_fmt = self.qa_dict[-i]['question'] + "<br>{{c1::"\
+                    + self.qa_dict[-i]['answer'] + "}}"
+                self.qa_dict[-i]["basic_in_clozed_format"] = clozed_fmt
             self.qa_dict[-i] = {**self.qa_dict[-i],
                                  "clozed_text": cloze,
                                  "creation_time": cur_time,
@@ -230,12 +251,13 @@ the title of the article and not the url")
 
         res = []
         for qa_pair in self.qa_dict:
-            if jeopardy:
-                string = f"\"{prefix}{qa_pair['answer']}\",\"\
-{qa_pair['question']}\""
-            else:
-                string = f"\"{prefix}{qa_pair['question']}\",\"\
-{qa_pair['answer']}\""
+            if qa_pair['note_type'] == "basic":
+                if jeopardy:
+                    string = f"\"{prefix}{qa_pair['answer']}\",\" {qa_pair['question']}\""
+                else:
+                    string = f"\"{prefix}{qa_pair['question']}\",\" {qa_pair['answer']}\""
+            elif qa_pair['note_type'] == "cloze":
+                string = f"\"{prefix}{qa_pair['cloze']}\""
             res.append(string)
         return res
 
