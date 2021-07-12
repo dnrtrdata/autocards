@@ -21,8 +21,6 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
 
 class Autocards:
-    def __init__(self):
-        print("Loading backend...")
     """
     Main class used to create flashcards from text. The variable
     'store_content' defines whether the original paragraph is stored in the
@@ -32,7 +30,14 @@ class Autocards:
     variable wtm allow to specify wether you want to remove the mention of
     Autocards in your cards.
     """
+    def __init__(self,
+            store_content=True,
+            watermark=True,
+            cloze_type="anki"):
+        print("Loading backend, can take some time...")
+        self.store_content = store_content
         self.cloze_type = cloze_type
+        self.watermark = watermark
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
                               ans_model='valhalla/t5-small-qa-qg-hl')
@@ -68,6 +73,15 @@ could be made from it:{text}\n")
         n = len(self.qa_dict)
 
         cur_time = time.asctime()
+        watermark_str = "\n\nFlashcard created using Autocards."
+
+        if self.store_content is True:
+            stored_text = text
+        else:
+            stored_text = "Content not saved"
+        if self.watermark is True:
+            stored_text = stored_text + watermark_str
+
         for i in range(diff):
             i += 1
             if self.qa_dict[-i]["note_type"] == "cloze":
@@ -88,11 +102,9 @@ could be made from it:{text}\n")
                     + self.qa_dict[-i]['answer'] + "}}"
                 self.qa_dict[-i]["basic_in_clozed_format"] = clozed_fmt
             self.qa_dict[-i] = {**self.qa_dict[-i],
-                                 "clozed_text": cloze,
-                                 "creation_time": cur_time,
-                                 "title": title,
-                                 "source": text
-                                 }
+                                "creation_time_in_s": cur_time,
+                                "source_title": title,
+                                "source_text": stored_text }
         tqdm.write(f"Added {diff} qa pair (total = {cur_n})")
 
     def _sanitize_text(self, text):
