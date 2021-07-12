@@ -62,7 +62,7 @@ class Autocards:
             self.qa_dict += self.qg(text)
         except IndexError:
             print(f"\nSkipping section because no cards \
-could be made from it:{text}\n")
+could be made from that text: '{text}'\n")
             self.qa_dict.append({"question": "skipped",
                                  "answer": "skipped",
                                  "note_type": "basic"})
@@ -83,7 +83,8 @@ could be made from it:{text}\n")
             stored_text = stored_text + watermark_str
 
         for i in range(diff):
-            i += 1
+            i += 1   # counter value is actually offset
+
             if self.qa_dict[-i]["note_type"] == "cloze":
                 if self.cloze_type == "anki":
                     cl_str = self.qa_dict[-i]["cloze"]
@@ -138,7 +139,7 @@ could be made from it:{text}\n")
         user_input = input("Enter your text below then press Enter (press\
  enter twice to validate input):\n>")
 
-        print("\nFeeding your text to Autocards.")
+        print("\nFeeding your text to Autocards...")
         user_input = self._sanitize_text(user_input)
         self.consume_var(user_input, title, per_paragraph=False)
         print("Done feeding text.")
