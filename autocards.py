@@ -23,6 +23,15 @@ os.environ["TOKENIZERS_PARALLELISM"] = "true"
 class Autocards:
     def __init__(self):
         print("Loading backend...")
+    """
+    Main class used to create flashcards from text. The variable
+    'store_content' defines whether the original paragraph is stored in the
+    output. This allows to store context alongside the question and answer pair
+    but dramatically increase size. The variable notetype refers to the type
+    of flashcard that must be created: either cloze, basic or both. The
+    variable wtm allow to specify wether you want to remove the mention of
+    Autocards in your cards.
+    """
         self.cloze_type = cloze_type
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
