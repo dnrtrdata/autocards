@@ -61,7 +61,11 @@ class QGPipeline:
         
         qg_inputs = [example['source_text'] for example in qg_examples]
         questions = self._generate_questions(qg_inputs)
-        output = [{'answer': example['answer'], 'question': que} for example, que in zip(qg_examples, questions)]
+        output = [{'answer': example['answer'], 
+                   'question': que,
+                   'note_type': "basic"} for example, que in
+                  zip(qg_examples, questions)]
+        output.extend([{'cloze': cl, "note_type": "cloze"} for cl in qg_inputs])
         return output
     
     def _generate_questions(self, inputs):
