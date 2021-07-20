@@ -249,7 +249,8 @@ the title of the article and not the url")
 
         if not valid_sections:
             print("No valid sections found, change the 'element' argument\
- to look for other html sections than 'p'")
+ to look for other html sections than 'p'. Find the relevant 'element' using \
+ the 'inspect' functionnality in your favorite browser.")
             return None
 
         for section in tqdm(valid_sections,
