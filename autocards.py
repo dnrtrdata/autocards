@@ -228,14 +228,16 @@ the title of the article and not the url")
         title = ""
         with suppress(Exception):
             title = soup.find_all('h1')[0].text
-        with suppress(Exception):
-            title = soup.find_all('h1').text
-        with suppress(Exception):
-            title = soup.find_all('title').text
-        title.strip()
+        if title == "":
+            with suppress(Exception):
+                title = soup.find_all('h1').text
+        if title == "":
+            with suppress(Exception):
+                title = soup.find_all('title').text
         if title == "":
             print("Couldn't find title of the page")
             title = source
+        title.strip()
 
         valid_sections = []  # remove text sections that are too short:
         for section in el:
