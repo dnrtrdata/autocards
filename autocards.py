@@ -144,25 +144,6 @@ could be made from that text: '{text}'\n")
         self.consume_var(user_input, title, per_paragraph=False)
         print("Done feeding text.")
 
-    def consume_wiki_summary(self, keyword, lang="en"):
-        "Take a wikipedia keyword and creates qa pairs from its summary"
-        if "http" in keyword:
-            print("To consume a wikipedia summmary, you have to input \
-the title of the article and not the url")
-            return None
-        wikipedia.set_lang(lang)
-        try:
-            wiki = wikipedia.page(keyword)
-        except PageError as e:
-            print(f"Page not found, error code:\n{e}")
-            return None
-        summary = wiki.summary
-        title = wiki.title
-        print(f"Article title: {title}")
-
-        summary = self._sanitize_text(summary)
-        self.consume_var(summary, title, True)
-
     def consume_pdf(self, pdf_path, per_paragraph=True):
         if not Path(pdf_path).exists():
             print(f"PDF file not found at {pdf_path}!")
