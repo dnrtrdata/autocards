@@ -16,7 +16,6 @@ from bs4 import BeautifulSoup
 from pprint import pprint
 from epub_conversion.utils import open_book, convert_epub_to_lines
 
-# otherwise csv and json outputs contain a warning string
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
 
@@ -30,14 +29,14 @@ class Autocards:
     variable wtm allow to specify wether you want to remove the mention of
     Autocards in your cards.
     """
+
     def __init__(self,
-            store_content=True,
-            watermark=True,
-            cloze_type="anki"):
-        print("Loading backend, can take some time...")
+                 store_content=True,
+                 watermark=True,
+                 cloze_type="anki"):
+        print("Loading backend, this can take some time...")
         self.store_content = store_content
         self.cloze_type = cloze_type
-        self.watermark = watermark
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
                               ans_model='valhalla/t5-small-qa-qg-hl')
@@ -48,9 +47,8 @@ class Autocards:
 'SM'")
             raise SystemExit()
 
-        global n, cur_n
-        n = len(self.qa_dict)
-        cur_n = n
+        self.qa_count = len(self.qa_dict)
+        self.current_qa = self.qa_count
 
     def _call_qg(self, text, title):
         """
@@ -67,23 +65,20 @@ could be made from that text: '{text}'\n")
                                  "answer": "skipped",
                                  "note_type": "basic"})
 
-        global n, cur_n
-        cur_n = len(self.qa_dict)
-        diff = cur_n - n
-        n = len(self.qa_dict)
+        self.current_qa = len(self.qa_dict)
+        diff = self.current_qa - self.qa_count
+        self.qa_count = len(self.qa_dict)
 
         cur_time = time.asctime()
-        watermark_str = "\n\nFlashcard created using Autocards."
 
         if self.store_content is True:
             stored_text = text
         else:
             stored_text = "Content not saved"
-        if self.watermark is True:
-            stored_text = stored_text + watermark_str
 
+        # TODO: refactor loop
         for i in range(diff):
-            i += 1   # counter value is actually offset
+            i += 1
 
             if self.qa_dict[-i]["note_type"] == "cloze":
                 if self.cloze_type == "anki":
@@ -94,7 +89,7 @@ could be made from that text: '{text}'\n")
                     cl_str = cl_str.replace(" {{c1::", "{{c1::")
                     self.qa_dict[-i]["cloze"] = cl_str
                 if self.cloze_type == "SM":
-                    # TODO
+                    # TODO: implement SM cloze style
                     print("SM cloze not yet implemented")
                     raise SystemExit()
 
@@ -105,8 +100,8 @@ could be made from that text: '{text}'\n")
             self.qa_dict[-i] = {**self.qa_dict[-i],
                                 "creation_time_in_s": cur_time,
                                 "source_title": title,
-                                "source_text": stored_text }
-        tqdm.write(f"Added {diff} qa pair (total = {cur_n})")
+                                "source_text": stored_text}
+        tqdm.write(f"Added {diff} qa pair (total = {self.current_qa})")
 
     def _sanitize_text(self, text):
         "correct common errors in text"
@@ -143,25 +138,6 @@ could be made from that text: '{text}'\n")
         user_input = self._sanitize_text(user_input)
         self.consume_var(user_input, title, per_paragraph=False)
         print("Done feeding text.")
-
-    def consume_wiki_summary(self, keyword, lang="en"):
-        "Take a wikipedia keyword and creates qa pairs from its summary"
-        if "http" in keyword:
-            print("To consume a wikipedia summmary, you have to input \
-the title of the article and not the url")
-            return None
-        wikipedia.set_lang(lang)
-        try:
-            wiki = wikipedia.page(keyword)
-        except PageError as e:
-            print(f"Page not found, error code:\n{e}")
-            return None
-        summary = wiki.summary
-        title = wiki.title
-        print(f"Article title: {title}")
-
-        summary = self._sanitize_text(summary)
-        self.consume_var(summary, title, True)
 
     def consume_pdf(self, pdf_path, per_paragraph=True):
         if not Path(pdf_path).exists():
@@ -259,9 +235,8 @@ the title of the article and not the url")
     def clear_qa(self):
         "Delete currently stored qa pairs"
         self.qa_dict = []
-        global n, cur_n
-        n = 0
-        cur_n = n
+        self.qa_count = 0
+        self.current_qa = 0
 
     def string_output(self, prefix='', jeopardy=False):
         "Return qa pairs to the user"
