@@ -1,24 +1,34 @@
 # Autocards
+<<<<<<< HEAD
 * Automatically create questions and answers from various input formats (PDF files, webpages, epub files, etc) then export them into your favorite flashcards software (like [anki](https://apps.ankiweb.net/) or [SuperMemo](https://supermemo.guru/wiki/SuperMemo))
 * To see a real world example, the complete output of [this article](https://www.biography.com/political-figure/philip-ii-of-macedon) can be found [in this folder](./output_example/). It's the direct output with no post processing whatsoever.
 * Code is PEP compliant and with docstrings. Contributions and PR are extremely appreciated
 * Learn more by reading [the official write-up](https://psionica.org/docs/lab/autocards/).
+=======
+
+- Automatically create questions and answers from various input formats (PDF files, webpages, wikipedia, epub files, etc) then export them into your favorite flashcards software (like [anki](https://apps.ankiweb.net/) or [SuperMemo](https://supermemo.guru/wiki/SuperMemo))
+- To see a real world example, the complete output of [this article](https://www.biography.com/political-figure/philip-ii-of-macedon) can be found [in this folder](./output_example/). It's the direct output with no post processing whatsoever.
+- Code is PEP compliant and with docstrings. Contributions and PR are extremely appreciated
+- Learn more by reading [the official write-up](https://psionica.org/docs/lab/autocards/).
+>>>>>>> 3f9a1c4dc20a3a49699013b3977feb3fb2371755
 
 ## Install guide:
-* `git clone https//github.com/Psionica/Autocards`
-* `cd Autocards`
-* `pip install -r ./requirements.txt`
-* open a python console: `ipython3`
-* install punkt by running `!python -m nltk.downloader punkt`
+
+- `git clone https//github.com/Psionica/Autocards`
+- `cd Autocards`
+- `pip install -r ./requirements.txt`
+- open a python console: `ipython3`
+- install punkt by running `!python -m nltk.downloader punkt`
 
 ### Autocards usage
+
 ```
 # loading
 from autocards import Autocards
 a = Autocards()
 
 # eating the input text using one of the following ways:
-a.consume_var(my_text, per_paragraph=True) 
+a.consume_var(my_text, per_paragraph=True)
 a.consume_user_input(title="")
 a.consume_textfile(filename, per_paragraph=True)
 a.consume_pdf(pdf_path, per_paragraph=True)
