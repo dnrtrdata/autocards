@@ -308,7 +308,7 @@ could be made from that text: '{text}'\n")
         "Prettyprint qa pairs to the user"
         pprint(self.string_output(*args, **kwargs))
 
-    def pandas_output(self, prefix=''):
+    def pandas_df(self, prefix=''):
         if len(self.qa_dict) == 0:
             print("No qa generated yet!")
             return None
