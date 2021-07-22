@@ -79,19 +79,15 @@ could be made from that text: '{text}'\n")
         # TODO: refactor loop
         for i in range(diff):
             i += 1
-
             if self.qa_dict[-i]["note_type"] == "cloze":
-                if self.cloze_type == "anki":
-                    cl_str = self.qa_dict[-i]["cloze"]
-                    cl_str = cl_str.replace("<hl>", "{{c1::", 1)
-                    cl_str = cl_str.replace("<hl>", "}}", 1)
-                    cl_str = cl_str.replace("}} ", "}}")
-                    cl_str = cl_str.replace(" {{c1::", "{{c1::")
-                    self.qa_dict[-i]["cloze"] = cl_str
-                if self.cloze_type == "SM":
-                    # TODO: implement SM cloze style
-                    print("SM cloze not yet implemented")
-                    raise SystemExit()
+                cl_str = self.qa_dict[-i]["cloze"]
+                cl_str = cl_str.replace("generate question: ", "")
+                cl_str = cl_str.replace("<hl>", "{{c1::", 1)
+                cl_str = cl_str.replace("<hl>", "}}", 1)
+                cl_str = cl_str.replace(" }}", "}}")
+                cl_str = cl_str.replace("{{c1:: ", "{{c1::")
+                cl_str = cl_str.replace("</s>", "")
+                self.qa_dict[-i]["cloze"] = cl_str
 
             if self.qa_dict[-i]["note_type"] == "basic":
                 clozed_fmt = self.qa_dict[-i]['question'] + "<br>{{c1::"\
@@ -101,6 +97,49 @@ could be made from that text: '{text}'\n")
                                 "creation_time_in_s": cur_time,
                                 "source_title": title,
                                 "source_text": stored_text}
+        for i in range(diff):
+            i += 1
+            if self.cloze_type == "anki" and len(self.qa_dict) != i and\
+               self.qa_dict[-i]["note_type"] == "cloze" and\
+               self.qa_dict[-i+1]["note_type"] == "cloze":
+                cl1 = re.sub(r"{{c\d+::|}}|\s", "",
+                             self.qa_dict[-i]["cloze"])
+                cl2 = re.sub(r"{{c\d+::|}}|\s", "",
+                             self.qa_dict[-i+1]["cloze"])
+                if cl1 == cl2:
+                    cloze_n = int(re.search(r"{{c(\d+)::(.*?)}}",
+                                        self.qa_dict[-i]["cloze"]).group(1))+1
+                    match = re.search(r"{{c(\d+)::(.*?)}}",
+                                      self.qa_dict[-i+1]["cloze"])
+                    template = self.qa_dict[-i]["cloze"]
+                    if "{{c" in template[0:match.start()]:
+                        offset = len(str(cloze_n)) + 8
+                    else:
+                        offset = 0
+                    big_cloze = template[0:match.start()+offset] +\
+                        "{{c" + str(cloze_n) + "::" +\
+                        template[match.start()+offset : match.end()+offset] +\
+                        "}}" + template[match.end()+1+offset:]
+
+                    big_cloze.strip()
+                    breakpoint()
+                    #self.qa_dict[-i]['cloze'] = big_cloze
+                    self.qa_dict[-i+1]['cloze'] = big_cloze
+                    self.qa_dict[-i]['cloze'] += " ___tomerge"
+                    i -= 1   # to make sure all siblings are found
+
+            if self.cloze_type == "SM":
+                # TODO: implement SM cloze style
+                print("SM cloze not yet implemented")
+                raise SystemExit()
+
+
+        if self.cloze_type == "anki":
+            for qa in self.qa_dict:
+                if qa["note_type"] == "cloze" and qa["cloze"].endswith(" ___tomerge"):
+                    pass
+                    #self.qa_dict.remove(qa)
+
         tqdm.write(f"Added {diff} qa pair (total = {self.current_qa})")
 
     def _sanitize_text(self, text):
