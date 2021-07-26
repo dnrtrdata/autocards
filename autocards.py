@@ -63,6 +63,7 @@ class Autocards:
 could be made from that text: '{text}'\n")
             self.qa_dict.append({"question": "skipped",
                                  "answer": "skipped",
+                                 "cloze": "",
                                  "note_type": "basic"})
 
         self.current_qa = len(self.qa_dict)
