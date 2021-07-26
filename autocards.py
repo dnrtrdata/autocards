@@ -280,17 +280,18 @@ could be made from that text: '{text}'\n")
         self.qa_dict = []
         self.qa_count = 0
         self.current_qa = 0
+        self.qa_dic_list = []
 
     def string_output(self, prefix='', jeopardy=False):
         "Return qa pairs to the user"
         if prefix != "" and prefix[-1] != ' ':
             prefix += ' '
-        if len(self.qa_dict) == 0:
+        if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
             return None
 
         res = []
-        for qa_pair in self.qa_dict:
+        for qa_pair in self.qa_dic_list:
             if qa_pair['note_type'] == "basic":
                 if jeopardy:
                     string = f"\"{prefix}{qa_pair['answer']}\",\" {qa_pair['question']}\""
@@ -310,12 +311,12 @@ could be made from that text: '{text}'\n")
         pprint(self.string_output(*args, **kwargs))
 
     def pandas_df(self, prefix=''):
-        if len(self.qa_dict) == 0:
+        if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
             return None
         "Output a Pandas DataFrame containing qa pairs and metadata"
-        df = pd.DataFrame(columns=list(self.qa_dict[0].keys()))
-        for qa in self.qa_dict:
+        df = pd.DataFrame(columns=list(self.qa_dic_list[0].keys()))
+        for qa in self.qa_dic_list:
             df = df.append(qa, ignore_index=True)
         for i in df.index:
             for c in df.columns:
@@ -326,7 +327,7 @@ could be made from that text: '{text}'\n")
 
     def to_csv(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as csv file"
-        if len(self.qa_dict) == 0:
+        if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
             return None
         if prefix != "" and prefix[-1] != ' ':
@@ -343,7 +344,7 @@ could be made from that text: '{text}'\n")
 
     def to_json(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as json file"
-        if len(self.qa_dict) == 0:
+        if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
             return None
         if prefix != "" and prefix[-1] != ' ':
