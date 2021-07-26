@@ -40,15 +40,12 @@ class Autocards:
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
                               ans_model='valhalla/t5-small-qa-qg-hl')
-        self.qa_dict = []
+        self.qa_dic_list = []
 
         if self.cloze_type not in ["anki", "SM"]:
             print("Invalid cloze type, must be either 'anki' or \
 'SM'")
             raise SystemExit()
-
-        self.qa_count = len(self.qa_dict)
-        self.current_qa = self.qa_count
 
     def _call_qg(self, text, title):
         """
@@ -56,92 +53,94 @@ class Autocards:
         dictionnary containing metadata (clozed formating, creation time,
         title, source text)
         """
+        to_add = []
+        to_add_cloze = []
+        to_add_basic = []
         try:
-            self.qa_dict += self.qg(text)
+            to_add = self.qg(text)
+            to_add_cloze = [qa for qa in to_add if qa["note_type"] == "cloze"]
+            to_add_basic = [qa for qa in to_add if qa["note_type"] == "basic"]
         except IndexError:
-            print(f"\nSkipping section because no cards \
-could be made from that text: '{text}'\n")
-            self.qa_dict.append({"question": "skipped",
+            tqdm.write(f"\nSkipping section because no cards \
+could be made from that text: '{text}'")
+            to_add_basic.append({"question": "skipped",
                                  "answer": "skipped",
                                  "cloze": "",
                                  "note_type": "basic"})
 
-        self.current_qa = len(self.qa_dict)
-        diff = self.current_qa - self.qa_count
-        self.qa_count = len(self.qa_dict)
-
         cur_time = time.asctime()
 
-        if self.store_content is True:
-            stored_text = text
+        if self.store_content is False:
+            # don't store content, to minimize the size of the output fule
+            stored_text = ""
         else:
-            stored_text = "Content not saved"
+            stored_text = text
 
-        # TODO: refactor loop
-        for i in range(diff):
-            i += 1
-            if self.qa_dict[-i]["note_type"] == "cloze":
-                cl_str = self.qa_dict[-i]["cloze"]
-                cl_str = cl_str.replace("generate question: ", "")
-                cl_str = cl_str.replace("<hl>", "{{c1::", 1)
-                cl_str = cl_str.replace("<hl>", "}}", 1)
-                cl_str = cl_str.replace(" }}", "}}")
-                cl_str = cl_str.replace("{{c1:: ", "{{c1::")
-                cl_str = cl_str.replace("</s>", "")
-                self.qa_dict[-i]["cloze"] = cl_str
+        # loop over all newly added qa:
+        if to_add_basic != []:
+            for i in range(0, len(to_add_basic)):
+                if to_add_basic[i]["note_type"] == "basic":
+                    clozed_fmt = to_add_basic[i]['question'] + "<br>{{c1::"\
+                        + to_add_basic[i]['answer'] + "}}"
+                    to_add_basic[i]["basic_in_clozed_format"] = clozed_fmt
 
-            if self.qa_dict[-i]["note_type"] == "basic":
-                clozed_fmt = self.qa_dict[-i]['question'] + "<br>{{c1::"\
-                    + self.qa_dict[-i]['answer'] + "}}"
-                self.qa_dict[-i]["basic_in_clozed_format"] = clozed_fmt
-            self.qa_dict[-i] = {**self.qa_dict[-i],
-                                "creation_time_in_s": cur_time,
-                                "source_title": title,
-                                "source_text": stored_text}
-        for i in range(diff):
-            i += 1
-            if self.cloze_type == "anki" and len(self.qa_dict) != i and\
-               self.qa_dict[-i]["note_type"] == "cloze" and\
-               self.qa_dict[-i+1]["note_type"] == "cloze":
-                cl1 = re.sub(r"{{c\d+::|}}|\s", "",
-                             self.qa_dict[-i]["cloze"])
-                cl2 = re.sub(r"{{c\d+::|}}|\s", "",
-                             self.qa_dict[-i+1]["cloze"])
-                if cl1 == cl2:
-                    cloze_n = int(re.search(r"{{c(\d+)::(.*?)}}",
-                                        self.qa_dict[-i]["cloze"]).group(1))+1
-                    match = re.search(r"{{c(\d+)::(.*?)}}",
-                                      self.qa_dict[-i+1]["cloze"])
-                    template = self.qa_dict[-i]["cloze"]
-                    if "{{c" in template[0:match.start()]:
-                        offset = len(str(cloze_n)) + 8
-                    else:
-                        offset = 0
-                    big_cloze = template[0:match.start()+offset] +\
-                        "{{c" + str(cloze_n) + "::" +\
-                        template[match.start()+offset : match.end()+offset] +\
-                        "}}" + template[match.end()+1+offset:]
+        if to_add_cloze != []:
+            for i in range(0, len(to_add_cloze)):
+                if to_add_cloze[i]["note_type"] == "cloze":  # cloze formating
+                    cl_str = to_add_cloze[i]["cloze"]
+                    cl_str = cl_str.replace("generate question: ", "")
+                    cl_str = cl_str.replace("<hl> ", "{{c1::", 1)
+                    cl_str = cl_str.replace(" <hl>", "}}", 1)
+                    cl_str = cl_str.replace(" </s>", "")
+                    cl_str.strip()
+                    to_add_cloze[i]["cloze"] = cl_str
+                    to_add_cloze[i]["basic_in_clozed_format"] = ""
 
-                    big_cloze.strip()
-                    breakpoint()
-                    #self.qa_dict[-i]['cloze'] = big_cloze
-                    self.qa_dict[-i+1]['cloze'] = big_cloze
-                    self.qa_dict[-i]['cloze'] += " ___tomerge"
-                    i -= 1   # to make sure all siblings are found
+        # merging cloze of the same text as a single qa with several cloze:
+        if to_add_cloze != []:
+            for i in range(0, len(to_add_cloze)-1):
+                if self.cloze_type == "SM":
+                    tqdm.write("SM cloze not yet implemented, luckily \
+SuperMemo supports importing from anki format. Hence the anki format will \
+be used for your input.")
+                    self.cloze_type = "anki"
 
-            if self.cloze_type == "SM":
-                # TODO: implement SM cloze style
-                print("SM cloze not yet implemented")
-                raise SystemExit()
+                if self.cloze_type == "anki" and len(self.qa_dic_list) != i:
+                    cl1 = re.sub(r"{{c\d+::|}}|\s", "",
+                                 to_add_cloze[i]["cloze"])
+                    cl2 = re.sub(r"{{c\d+::|}}|\s", "",
+                                 to_add_cloze[i+1]["cloze"])
+                    if cl1 == cl2:
+                        match = re.findall(r"{{c\d+::(.*?)}}",
+                                           to_add_cloze[i]["cloze"])
+                        match.extend(re.findall(r"{{c\d+::(.*?)}}",
+                                                to_add_cloze[i+1]["cloze"]))
+                        clean_text = re.sub(r"{{c\d+::|}}", "",
+                                            to_add_cloze[i]["cloze"])
+                        if "" in match:
+                            match.remove("")
+                        match = list(set(match))
+                        for cloze_number, q in enumerate(match):
+                            q.strip()
+                            new_q = "{{c" + str(cloze_number+1) + "::" +\
+                                    q + "}}"
+                            clean_text = clean_text.replace(q, new_q)
+                        clean_text.strip()
 
+                        to_add_cloze[i]['cloze'] = clean_text + "___TO_REMOVE___"
+                        to_add_cloze[i+1]['cloze'] = clean_text
 
-        if self.cloze_type == "anki":
-            for qa in self.qa_dict:
-                if qa["note_type"] == "cloze" and qa["cloze"].endswith(" ___tomerge"):
-                    pass
-                    #self.qa_dict.remove(qa)
+        to_add_full = to_add_cloze + to_add_basic
+        for qa in to_add_full:
+            qa["date"] = cur_time
+            qa["source_title"] = title
+            qa["source_text"] = stored_text
+            if qa["note_type"] == "basic":
+                self.qa_dic_list.append(qa)
+            elif not qa["cloze"].endswith("___TO_REMOVE___"):
+                self.qa_dic_list.append(qa)
 
-        tqdm.write(f"Added {diff} qa pair (total = {self.current_qa})")
+        tqdm.write(f"Number of question generated so far: {len(self.qa_dic_list)}")
 
     def _sanitize_text(self, text):
         "correct common errors in text"
@@ -277,9 +276,6 @@ could be made from that text: '{text}'\n")
 
     def clear_qa(self):
         "Delete currently stored qa pairs"
-        self.qa_dict = []
-        self.qa_count = 0
-        self.current_qa = 0
         self.qa_dic_list = []
 
     def string_output(self, prefix='', jeopardy=False):
