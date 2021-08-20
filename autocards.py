@@ -329,7 +329,7 @@ be used for your input.")
         if prefix != "" and prefix[-1] != ' ':
             prefix += ' '
 
-        df = self.pandas_output(prefix)
+        df = self.pandas_df(prefix)
 
         for i in df.index:
             for c in df.columns:
@@ -346,5 +346,5 @@ be used for your input.")
         if prefix != "" and prefix[-1] != ' ':
             prefix += ' '
 
-        self.pandas_output(prefix).to_json(filename)
+        self.pandas_df(prefix).to_json(filename)
         print(f"Done writing qa pairs to {filename}")

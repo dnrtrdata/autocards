@@ -40,7 +40,7 @@ out = a.string_output(prefix='', jeopardy=False)
 #        * jeopardy is when switching question and answer
 a.print(prefix='', jeopardy=False)
 a.pprint(prefix='', jeopardy=False)  # pretty printing
-df = a.pandas_output(prefix='')
+df = a.pandas_df(prefix='')
 a.to_csv("output.csv", prefix="", jeopardy=False)
 a.to_json("output.json", prefix="", jeopardy=False)
 
