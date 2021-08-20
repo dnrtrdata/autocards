@@ -335,8 +335,11 @@ be used for your input.")
             for c in df.columns:
                 df.loc[i, c] = str(df.loc[i, c]).replace(",", r"\,")
 
-        df.to_csv(filename)
-        print(f"Done writing qa pairs to {filename}")
+        if ".csv" in filename:
+            filename = filename.replace(".csv", "")
+        df[df["note_type"] == "cloze"].to_csv(f"{filename}_cloze.csv")
+        df[df["note_type"] != "cloze"].to_csv(f"{filename}_basic.csv")
+        print(f"Done writing qa pairs to {filename}_cloze.csv and {filename}_basic.csv")
 
     def to_json(self, filename, prefix='', jeopardy=False):
         "Export qa pairs as json file"
@@ -346,5 +349,10 @@ be used for your input.")
         if prefix != "" and prefix[-1] != ' ':
             prefix += ' '
 
-        self.pandas_df(prefix).to_json(filename)
-        print(f"Done writing qa pairs to {filename}")
+        df = self.pandas_df(prefix)
+
+        if ".json" in filename:
+            filename = filename.replace(".json", "")
+        df[df["note_type"] == "cloze"].to_json(f"{filename}_cloze.json")
+        df[df["note_type"] != "cloze"].to_json(f"{filename}_basic.json")
+        print(f"Done writing qa pairs to {filename}_cloze.json and {filename}_basic.json")
