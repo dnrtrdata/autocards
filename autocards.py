@@ -321,7 +321,7 @@ be used for your input.")
                     df.loc[i, c] = "Error"
         return df
 
-    def to_csv(self, filename, prefix='', jeopardy=False):
+    def to_csv(self, filename="Autocards_export.csv", prefix=''):
         "Export qa pairs as csv file"
         if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
@@ -341,7 +341,7 @@ be used for your input.")
         df[df["note_type"] != "cloze"].to_csv(f"{filename}_basic.csv")
         print(f"Done writing qa pairs to {filename}_cloze.csv and {filename}_basic.csv")
 
-    def to_json(self, filename, prefix='', jeopardy=False):
+    def to_json(self, filename="Autocards_export.json", prefix=''):
         "Export qa pairs as json file"
         if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")

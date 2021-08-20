@@ -41,8 +41,8 @@ out = a.string_output(prefix='', jeopardy=False)
 a.print(prefix='', jeopardy=False)
 a.pprint(prefix='', jeopardy=False)  # pretty printing
 df = a.pandas_df(prefix='')
-a.to_csv("output.csv", prefix="", jeopardy=False)
-a.to_json("output.json", prefix="", jeopardy=False)
+a.to_csv("output.csv", prefix="")
+a.to_json("output.json", prefix="")
 
 # Also note that a user provided his own terrible scripts that you can get inspiration from, they are located in the folder `examples_script`
 ```
