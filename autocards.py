@@ -148,8 +148,6 @@ be used for your input.")
         text = text.replace("\xa0", " ")
         # wikipedia style citation:
         text = re.sub(r"\[\d*\]", "", text)
-        # extra spaces:
-        text = re.sub(r"\s\s*", " ", text)
         return text
 
     def consume_var(self, text, title="untitled variable",
