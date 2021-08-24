@@ -142,14 +142,15 @@ be used for your input.")
 
         tqdm.write(f"Number of question generated so far: {len(self.qa_dic_list)}")
 
-    def _sanitize_text(self, text):
+    def _sanitize_text(self, text, remove_space=True):
         "correct common errors in text"
         # occurs sometimes in epubs apparently:
         text = text.replace("\xa0", " ")
         # wikipedia style citation:
         text = re.sub(r"\[\d*\]", "", text)
         # extra spaces:
-        text = re.sub(r"\s\s*", " ", text)
+        if remove_space is True:
+            text = re.sub(r"\s\s*", " ", text)
         return text
 
     def consume_var(self, text, title="untitled variable",
@@ -194,7 +195,7 @@ be used for your input.")
         for page in pdf.pages:
             full_text.append(page.extractText())
         text = " ".join(full_text)
-        text = self._sanitize_text(text)
+        text = self._sanitize_text(text, remove_space=False)
 
         self.consume_var(text, title, per_paragraph)
 
