@@ -10,8 +10,6 @@ from contextlib import suppress
 
 import requests
 import PyPDF2
-import wikipedia
-from wikipedia.exceptions import PageError
 from bs4 import BeautifulSoup
 from pprint import pprint
 from epub_conversion.utils import open_book, convert_epub_to_lines
