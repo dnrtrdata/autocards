@@ -33,9 +33,40 @@ class Autocards:
     def __init__(self,
                  store_content=True,
                  watermark=True,
+                 in_lang="any",
+                 out_lang="en",
                  cloze_type="anki"):
         print("Loading backend, this can take some time...")
         self.store_content = store_content
+
+        if len(out_lang) != 2 or len(in_lang) not in [2, 3]:
+            print("Output and input language has to be a two letter code like 'en' or 'fr'")
+            raise SystemExit()
+        if in_lang == "any":  # otherwise the user might thought that the
+            in_lang = "en"    # input has to be in english
+        if in_lang != "en":
+            try:
+                print("Loading input translation model...")
+                from transformers import pipeline
+                self.in_trans = pipeline(f"translation_{in_lang}_to_en",
+                                      model = f"Helsinki-NLP/opus-mt-{in_lang}-en")
+            except Exception as e:
+                print(f"Was not able to load translation pipeline: {e}")
+                print("Resetting input language to english.")
+                in_lang = "en"
+        if out_lang != "en":
+            try:
+                print("Loading output translation model...")
+                from transformers import pipeline
+                self.out_trans = pipeline(f"translation_en_to_{out_lang}",
+                                      model = f"Helsinki-NLP/opus-mt-en-{out_lang}")
+            except Exception as e:
+                print(f"Was not able to load translation pipeline: {e}")
+                print("Resetting output language to english.")
+                out_lang = "en"
+        self.in_lang = in_lang
+        self.out_lang = out_lang
+
         self.cloze_type = cloze_type
         self.qg = qg_pipeline('question-generation',
                               model='valhalla/t5-base-qg-hl',
@@ -56,6 +87,8 @@ class Autocards:
         to_add = []
         to_add_cloze = []
         to_add_basic = []
+        if self.in_lang != "en":
+            text = self.in_trans(text)[0]["translation_text"]
         try:
             to_add = self.qg(text)
             to_add_cloze = [qa for qa in to_add if qa["note_type"] == "cloze"]
@@ -76,10 +109,13 @@ could be made from that text: '{text}'")
         else:
             stored_text = text
 
-        # loop over all newly added qa:
+        # loop over all newly added qa to format the text:
         if to_add_basic != []:
             for i in range(0, len(to_add_basic)):
                 if to_add_basic[i]["note_type"] == "basic":
+                    if self.out_lang != "en":
+                        to_add_basic[i]["question"] = self.out_trans(to_add_basic[i]["question"])[0]["translation_text"]
+                        to_add_basic[i]["answer"] = self.out_trans(to_add_basic[i]["answer"])[0]["translation_text"]
                     clozed_fmt = to_add_basic[i]['question'] + "<br>{{c1::"\
                         + to_add_basic[i]['answer'] + "}}"
                     to_add_basic[i]["basic_in_clozed_format"] = clozed_fmt
@@ -87,6 +123,8 @@ could be made from that text: '{text}'")
         if to_add_cloze != []:
             for i in range(0, len(to_add_cloze)):
                 if to_add_cloze[i]["note_type"] == "cloze":  # cloze formating
+                    if self.out_lang != "en":
+                        to_add_cloze[i]["cloze"] = self.out_trans(to_add_cloze[i]["cloze"])[0]["translation_text"]
                     cl_str = to_add_cloze[i]["cloze"]
                     cl_str = cl_str.replace("generate question: ", "")
                     cl_str = cl_str.replace("<hl> ", "{{c1::", 1)

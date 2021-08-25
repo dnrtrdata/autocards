@@ -23,7 +23,7 @@
 ```
 # loading
 from autocards import Autocards
-a = Autocards()
+a = Autocards(in_lang="any", out_lang="ru")  # translation modules sometimes need to be downloaded and can be rather large
 
 # eating the input text using one of the following ways:
 a.consume_var(my_text, per_paragraph=True)
