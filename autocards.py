@@ -30,7 +30,6 @@ class Autocards:
 
     def __init__(self,
                  store_content=True,
-                 watermark=True,
                  in_lang="any",
                  out_lang="en",
                  cloze_type="anki"):
