@@ -188,7 +188,7 @@ be used for your input.")
                                            to_add_cloze[i]["cloze"])
                         match.extend(re.findall(r"{{c\d+::(.*?)}}",
                                                 to_add_cloze[i+1]["cloze"]))
-                        clean_text = re.sub(r"{{c\d+::|}}", "",
+                        clean_cloze = re.sub(r"{{c\d+::|}}", "",
                                             to_add_cloze[i]["cloze"])
                         if "" in match:
                             match.remove("")
@@ -197,11 +197,11 @@ be used for your input.")
                             q.strip()
                             new_q = "{{c" + str(cloze_number+1) + "::" +\
                                     q + "}}"
-                            clean_text = clean_text.replace(q, new_q)
-                        clean_text.strip()
+                            clean_cloze = clean_cloze.replace(q, new_q)
+                        clean_cloze = clean_cloze.strip()
 
-                        to_add_cloze[i]['cloze'] = clean_text + "___TO_REMOVE___"
-                        to_add_cloze[i+1]['cloze'] = clean_text
+                        to_add_cloze[i]['cloze'] = clean_cloze + "___TO_REMOVE___"
+                        to_add_cloze[i+1]['cloze'] = clean_cloze
 
         to_add_full = to_add_cloze + to_add_basic
         for qa in to_add_full:
