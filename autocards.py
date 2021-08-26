@@ -32,9 +32,13 @@ class Autocards:
                  store_content=True,
                  in_lang="any",
                  out_lang="en",
-                 cloze_type="anki"):
+                 cloze_type="anki",
+                 model = "valhalla/distilt5-qa-qg-hl-12-6",
+                 ans_model = "valhalla/distilt5-qa-qg-hl-12-6"):
         print("Loading backend, this can take some time...")
         self.store_content = store_content
+        self.model = model
+        self.ans_model = ans_model
 
         if len(out_lang) != 2 or len(in_lang) not in [2, 3]:
             print("Output and input language has to be a two letter code like 'en' or 'fr'")
@@ -66,8 +70,8 @@ class Autocards:
 
         self.cloze_type = cloze_type
         self.qg = qg_pipeline('question-generation',
-                              model='valhalla/t5-base-qg-hl',
-                              ans_model='valhalla/t5-small-qa-qg-hl')
+                              model=model,
+                              ans_model=ans_model)
         self.qa_dic_list = []
 
         if self.cloze_type not in ["anki", "SM"]:
