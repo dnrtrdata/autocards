@@ -89,7 +89,11 @@ class Autocards:
         to_add_cloze = []
         to_add_basic = []
         if self.in_lang != "en":
+            text_orig = str(text)
             text = self.in_trans(text)[0]["translation_text"]
+        else:
+            text_orig = ""
+
         try:
             to_add = self.qg(text)
             to_add_cloze = [qa for qa in to_add if qa["note_type"] == "cloze"]
@@ -105,18 +109,26 @@ could be made from that text: '{text}'")
         cur_time = time.asctime()
 
         if self.store_content is False:
-            # don't store content, to minimize the size of the output fule
+            # don't store content, to minimize the size of the output file
             stored_text = ""
+            stored_text_orig = ""
         else:
             stored_text = text
+            stored_text_orig = text_orig
 
         # loop over all newly added qa to format the text:
         if to_add_basic != []:
             for i in range(0, len(to_add_basic)):
                 if to_add_basic[i]["note_type"] == "basic":
                     if self.out_lang != "en":
+                        to_add_basic[i]["question_orig"] = to_add_basic[i]["question"]
+                        to_add_basic[i]["answer_orig"] = to_add_basic[i]["answer"]
                         to_add_basic[i]["question"] = self.out_trans(to_add_basic[i]["question"])[0]["translation_text"]
                         to_add_basic[i]["answer"] = self.out_trans(to_add_basic[i]["answer"])[0]["translation_text"]
+                    else:
+                        to_add_basic[i]["answer_orig"] = ""
+                        to_add_basic[i]["question_orig"] = ""
+
                     clozed_fmt = to_add_basic[i]['question'] + "<br>{{c1::"\
                         + to_add_basic[i]['answer'] + "}}"
                     to_add_basic[i]["basic_in_clozed_format"] = clozed_fmt
@@ -125,14 +137,36 @@ could be made from that text: '{text}'")
             for i in range(0, len(to_add_cloze)):
                 if to_add_cloze[i]["note_type"] == "cloze":  # cloze formating
                     if self.out_lang != "en":
-                        to_add_cloze[i]["cloze"] = self.out_trans(to_add_cloze[i]["cloze"])[0]["translation_text"]
-                    cl_str = to_add_cloze[i]["cloze"]
-                    cl_str = cl_str.replace("generate question: ", "")
-                    cl_str = cl_str.replace("<hl> ", "{{c1::", 1)
-                    cl_str = cl_str.replace(" <hl>", "}}", 1)
-                    cl_str = cl_str.replace(" </s>", "")
-                    cl_str.strip()
-                    to_add_cloze[i]["cloze"] = cl_str
+                        to_add_cloze[i]["cloze_orig"] = to_add_cloze[i]["cloze"]
+                        cl_str_ut = to_add_cloze[i]["cloze_orig"]
+                        cl_str_ut = cl_str_ut.replace("generate question: ", "")
+                        cl_str_ut = cl_str_ut.replace("<hl> ", "{{c1::", 1)
+                        cl_str_ut = cl_str_ut.replace(" <hl>", "}}", 1)
+                        cl_str_ut = cl_str_ut.replace(" </s>", "")
+                        cl_str_ut.strip()
+                        to_add_cloze[i]["cloze_orig"] = cl_str_ut
+
+                        cl_str = to_add_cloze[i]["cloze"]
+                        cl_str = cl_str.replace("generate question: ", "")
+                        cl_str = cl_str.replace("\"", "'")
+                        cl_str = cl_str.replace("<hl> ", "\"").replace(" <hl>", "\"")
+                        cl_str = cl_str.replace(" </s>", "")
+                        cl_str = cl_str.strip()
+                        cl_str = self.out_trans(cl_str)[0]["translation_text"]
+                        cl_str = cl_str.replace("\"", "{{c1::", 1)
+                        cl_str = cl_str.replace("\"", "}}", 1)
+                        to_add_cloze[i]["cloze"] = cl_str
+                    else:
+                        to_add_cloze[i]["cloze_orig"] = ""
+
+                        cl_str = to_add_cloze[i]["cloze"]
+                        cl_str = cl_str.replace("generate question: ", "")
+                        cl_str = cl_str.replace("<hl> ", "{{c1::", 1)
+                        cl_str = cl_str.replace(" <hl>", "}}", 1)
+                        cl_str = cl_str.replace(" </s>", "")
+                        cl_str.strip()
+                        to_add_cloze[i]["cloze"] = cl_str
+
                     to_add_cloze[i]["basic_in_clozed_format"] = ""
 
         # merging cloze of the same text as a single qa with several cloze:
@@ -174,6 +208,7 @@ be used for your input.")
             qa["date"] = cur_time
             qa["source_title"] = title
             qa["source_text"] = stored_text
+            qa["source_text_orig"] = stored_text_orig
             if qa["note_type"] == "basic":
                 self.qa_dic_list.append(qa)
             elif not qa["cloze"].endswith("___TO_REMOVE___"):
