@@ -194,7 +194,7 @@ be used for your input.")
                             match.remove("")
                         match = list(set(match))
                         for cloze_number, q in enumerate(match):
-                            q.strip()
+                            q = q.strip()
                             new_q = "{{c" + str(cloze_number+1) + "::" +\
                                     q + "}}"
                             clean_cloze = clean_cloze.replace(q, new_q)
@@ -218,6 +218,7 @@ be used for your input.")
 
     def _sanitize_text(self, text):
         "correct common errors in text"
+        text = text.strip()
         # occurs sometimes in epubs apparently:
         text = text.replace("\xa0", " ")
         # wikipedia style citation:
@@ -228,6 +229,7 @@ be used for your input.")
                     per_paragraph=False):
         "Take text as input and create qa pairs"
         text = text.replace('\xad ', '')
+        text = text.strip()
 
         if per_paragraph:
             for paragraph in tqdm(text.split('\n\n'),
@@ -244,6 +246,7 @@ be used for your input.")
         "Take user input and create qa pairs"
         user_input = input("Enter your text below then press Enter (press\
  enter twice to validate input):\n>")
+        user_input = user_input.strip()
 
         print("\nFeeding your text to Autocards...")
         user_input = self._sanitize_text(user_input)
