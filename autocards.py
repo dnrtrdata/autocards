@@ -393,7 +393,7 @@ be used for your input.")
             for c in df.columns:
                 if pd.isna(df.loc[i, c]):
                     # otherwise export functions break:
-                    df.loc[i, c] = "Error"
+                    df.loc[i, c] = ""
         return df
 
     def to_csv(self, filename="Autocards_export.csv", prefix=''):
