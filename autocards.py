@@ -381,6 +381,12 @@ be used for your input.")
         "Prettyprint qa pairs to the user"
         pprint(self.string_output(*args, **kwargs))
 
+    def _combine_df_columns(self, row, col_names):
+        combined = ""
+        for col in col_names:
+            combined += f"{col.upper()}: {dict(row)[col]}\n"
+        return "#"*15 + "Combined columns:\n" + combined + "#"*15
+
     def pandas_df(self, prefix=''):
         if len(self.qa_dic_list) == 0:
             print("No qa generated yet!")
@@ -394,6 +400,8 @@ be used for your input.")
                 if pd.isna(df.loc[i, c]):
                     # otherwise export functions break:
                     df.loc[i, c] = ""
+        df["combined_columns"] = [self._combine_df_columns(df.loc[x, :], df.columns)
+                             for x in df.index ]
         return df
 
     def to_csv(self, filename="Autocards_export.csv", prefix=''):
