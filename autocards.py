@@ -400,6 +400,11 @@ be used for your input.")
                 if pd.isna(df.loc[i, c]):
                     # otherwise export functions break:
                     df.loc[i, c] = ""
+        if self.in_lang == "en":
+            df = df.drop(columns=["source_text_orig"], axis=1)
+        if self.out_lang == "en":
+            df = df.drop(columns=["cloze_orig", "question_orig", "answer_orig"],
+                         axis=1)
         df["combined_columns"] = [self._combine_df_columns(df.loc[x, :], df.columns)
                              for x in df.index ]
         return df
