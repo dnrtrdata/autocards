@@ -8,6 +8,8 @@ import re
 import os
 from contextlib import suppress
 
+import json
+import urllib.request
 import requests
 import PyPDF2
 from bs4 import BeautifulSoup
@@ -443,4 +445,67 @@ be used for your input.")
             filename = filename.replace(".json", "")
         df[df["note_type"] == "cloze"].to_json(f"{filename}_cloze.json")
         df[df["note_type"] != "cloze"].to_json(f"{filename}_basic.json")
-        print(f"Done writing qa pairs to {filename}_cloze.json and {filename}_basic.json")
+        print(f"Done writing qa pairs to {filename}_cloze.json and \
+{filename}_basic.json")
+
+    def _ankiconnect_invoke(self, action, **params):
+        "send requests to ankiconnect addon"
+
+        def request_wrapper(action, **params):
+            return {'action': action, 'params': params, 'version': 6}
+
+        requestJson = json.dumps(request_wrapper(action, **params)
+                                 ).encode('utf-8')
+        try:
+            response = json.load(urllib.request.urlopen(
+                                    urllib.request.Request(
+                                        'http://localhost:8765',
+                                        requestJson)))
+        except (ConnectionRefusedError, urllib.error.URLError) as e:
+            print(f"{e}: is Anki open and ankiconnect enabled?")
+            raise SystemExit()
+        if len(response) != 2:
+            raise Exception('response has an unexpected number of fields')
+        if 'error' not in response:
+            raise Exception('response is missing required error field')
+        if 'result' not in response:
+            raise Exception('response is missing required result field')
+        if response['error'] == "Model name already exists":
+            print("Note type model already existing.")
+        if response['error'] is not None:
+            raise Exception(response['error'])
+        return response['result']
+
+    def to_anki(self, deckname="Autocards_export", tags="Autocards"):
+        "Export cards to anki using anki-connect addon"
+        df = self.pandas_df()
+        df["ID"] = [str(int(x)+1) for x in list(df.index)]
+
+        note_list = []
+        for entry in df.index:
+            note_list.append({"deckName": deckname,
+                              "modelName": "Autocards",
+                              "tags": tags,
+                              "fields": df.loc[entry, :].to_dict()
+                              })
+
+        template_content = [{"Front": "",
+                             "Back": ""}]
+
+        try:
+            self._ankiconnect_invoke(action="createModel",
+                                     modelName="Autocards",
+                                     inOrderFields=["ID"] + list(df.columns).remove("ID"),
+                                     cardTemplates=template_content)
+        except Exception as e:
+            print(f"{e}")
+
+        self._ankiconnect_invoke(action="createDeck", deck=deckname)
+        out = self._ankiconnect_invoke(action="addNotes", notes=note_list)
+        if list(set(out)) != [None]:
+            print("Cards sent to anki collection.\nYou can now open anki and use \
+    'change note type' to export the fields you need to your prefered notetype.")
+            return out
+        else:
+            print("An error happened.")
+            return out

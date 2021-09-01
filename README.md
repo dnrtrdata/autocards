@@ -43,6 +43,7 @@ a.pprint(prefix='', jeopardy=False)  # pretty printing
 df = a.pandas_df(prefix='')
 a.to_csv("output.csv", prefix="")
 a.to_json("output.json", prefix="")
+a.to_anki(deckname="autocards_export", tags="some_tag")
 
 # Also note that a user provided his own terrible scripts that you can get inspiration from, they are located in the folder `examples_script`
 ```
