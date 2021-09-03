@@ -11,7 +11,7 @@ from contextlib import suppress
 import json
 import urllib.request
 import requests
-import PyPDF2
+from tika import parser
 from bs4 import BeautifulSoup
 from pprint import pprint
 from epub_conversion.utils import open_book, convert_epub_to_lines
@@ -259,19 +259,16 @@ be used for your input.")
         if not Path(pdf_path).exists():
             print(f"PDF file not found at {pdf_path}!")
             return None
-        pdf = PyPDF2.PdfFileReader(open(pdf_path, 'rb'))
-        try:
-            title = pdf.documentInfo['/Title']
-            print(f"PDF title : {title}")
-        except KeyError:
-            title = pdf_path.split("/")[-1]
-            print(f"PDF title : {title}")
 
-        full_text = []
-        for page in pdf.pages:
-            full_text.append(page.extractText())
-        text = " ".join(full_text)
-        text = self._sanitize_text(text)
+        print("Warning: pdf parsing is usually of poor quality because \
+there are no good cross platform libraries. Consider using consume_textfile() \
+after preprocessing the text yourself.")
+        title = pdf_path.replace("\\", "").split("/")[-1]
+        raw = str(parser.from_file(pdf_path))
+        safe_text = raw.encode('utf-8', errors='ignore')
+        safe_text = str(safe_text).replace("\\n", "\n").replace("\\t", " ").replace("\\", "")
+
+        text = self._sanitize_text(safe_text)
 
         self.consume_var(text, title, per_paragraph)
 
