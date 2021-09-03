@@ -238,6 +238,7 @@ be used for your input.")
             for paragraph in tqdm(text.split('\n\n'),
                                   desc="Processing by paragraph",
                                   unit="paragraph"):
+                paragraph = paragraph.replace("\n", " ")
                 self._call_qg(paragraph, title)
         else:
             text = re.sub(r"\n\n*", ".", text)
