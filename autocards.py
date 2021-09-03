@@ -279,6 +279,11 @@ after preprocessing the text yourself.")
         text = open(filepath).read()
         text = self._sanitize_text(text)
         filename = str(filepath).split("/")[-1]
+        if per_paragraph is False and len(text)>300:
+            ans = input("The text is more than 300 characters long, \
+are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
+            if ans != "n":
+                per_paragraph = True
         self.consume_var(text,
                          filename,
                          per_paragraph=per_paragraph)
