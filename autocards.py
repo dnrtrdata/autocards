@@ -234,12 +234,14 @@ be used for your input.")
         text = text.strip()
 
         if per_paragraph:
+            print("Consuming text by paragraph:")
             for paragraph in tqdm(text.split('\n\n'),
                                   desc="Processing by paragraph",
                                   unit="paragraph"):
                 self._call_qg(paragraph, title)
         else:
             text = re.sub(r"\n\n*", ".", text)
+            print("Consuming text:")
             text = re.sub(r"\.\.*", ".", text)
             text = self._sanitize_text(text)
             self._call_qg(text, title)
