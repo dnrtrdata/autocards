@@ -488,6 +488,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         columns = df.columns
         columns.remove("ID")
 
+        # model formatting
         note_list = []
         for entry in df.index:
             note_list.append({"deckName": deckname,
@@ -499,6 +500,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         template_content = [{"Front": "",
                              "Back": ""}]
 
+        # send new card type to anki
         try:
             self._ankiconnect_invoke(action="createModel",
                                      modelName="Autocards",
@@ -507,7 +509,10 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         except Exception as e:
             print(f"{e}")
 
+        # create new deck
         self._ankiconnect_invoke(action="createDeck", deck=deckname)
+
+        # send notes to anki
         out = self._ankiconnect_invoke(action="addNotes", notes=note_list)
 
         if list(set(out)) != [None]:
