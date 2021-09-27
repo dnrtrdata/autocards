@@ -391,8 +391,8 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
     def _combine_df_columns(self, row, col_names):
         combined = ""
         for col in col_names:
-            combined += f"{col.upper()}: {dict(row)[col]}\n"
-        return "#"*15 + "Combined columns:\n" + combined + "#"*15
+            combined += f"{col.upper()}: {dict(row)[col]}<br>\n"
+        return "#"*15 + "Combined columns:<br>\n" + combined + "#"*15
 
     def pandas_df(self, prefix=''):
         if len(self.qa_dic_list) == 0:
