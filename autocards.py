@@ -191,7 +191,7 @@ be used for your input.")
                         match.extend(re.findall(r"{{c\d+::(.*?)}}",
                                                 to_add_cloze[i+1]["cloze"]))
                         clean_cloze = re.sub(r"{{c\d+::|}}", "",
-                                            to_add_cloze[i]["cloze"])
+                                             to_add_cloze[i]["cloze"])
                         if "" in match:
                             match.remove("")
                         match = list(set(match))
@@ -282,7 +282,7 @@ after preprocessing the text yourself.")
         text = open(filepath).read()
         text = self._sanitize_text(text)
         filename = str(filepath).split("/")[-1]
-        if per_paragraph is False and len(text)>300:
+        if per_paragraph is False and len(text) > 300:
             ans = input("The text is more than 300 characters long, \
 are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
             if ans != "n":
