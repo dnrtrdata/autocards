@@ -493,7 +493,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         for entry in df.index:
             note_list.append({"deckName": deckname,
                               "modelName": "Autocards",
-                              "tags": tags,
+                              "tags": [tags],
                               "fields": df.loc[entry, :].to_dict()
                               })
 
