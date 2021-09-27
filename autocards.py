@@ -485,6 +485,8 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         "Export cards to anki using anki-connect addon"
         df = self.pandas_df()
         df["ID"] = [str(int(x)+1) for x in list(df.index)]
+        columns = df.columns
+        columns.remove("ID")
 
         note_list = []
         for entry in df.index:
@@ -500,13 +502,14 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         try:
             self._ankiconnect_invoke(action="createModel",
                                      modelName="Autocards",
-                                     inOrderFields=["ID"] + list(df.columns).remove("ID"),
+                                     inOrderFields=["ID"].extend(columns),
                                      cardTemplates=template_content)
         except Exception as e:
             print(f"{e}")
 
         self._ankiconnect_invoke(action="createDeck", deck=deckname)
         out = self._ankiconnect_invoke(action="addNotes", notes=note_list)
+
         if list(set(out)) != [None]:
             print("Cards sent to anki collection.\nYou can now open anki and use \
     'change note type' to export the fields you need to your prefered notetype.")
