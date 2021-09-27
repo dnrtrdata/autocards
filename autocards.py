@@ -485,7 +485,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         "Export cards to anki using anki-connect addon"
         df = self.pandas_df()
         df["ID"] = [str(int(x)+1) for x in list(df.index)]
-        columns = df.columns
+        columns = df.columns.tolist()
         columns.remove("ID")
 
         # model formatting
@@ -504,7 +504,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         try:
             self._ankiconnect_invoke(action="createModel",
                                      modelName="Autocards",
-                                     inOrderFields=["ID"].extend(columns),
+                                     inOrderFields=["ID"] + columns,
                                      cardTemplates=template_content)
         except Exception as e:
             print(f"{e}")
