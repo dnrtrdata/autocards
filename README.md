@@ -14,9 +14,9 @@
 - `pip install -r ./requirements.txt`
 - install punkt by running `python -m nltk.downloader punkt`
 - open a python console: `ipython3`
-- read the [usage guide below](#usage)
+- read the [usage guide below](#Usage)
 
-## usage
+## Usage:
 All arguments are mentioned with their default value, you don't have to supply them every time.
 
 * initialization
