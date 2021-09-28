@@ -264,6 +264,7 @@ be used for your input.")
         print("Done feeding text.")
 
     def consume_pdf(self, pdf_path, per_paragraph=True):
+        "Take pdf file as input and create qa pairs"
         if not Path(pdf_path).exists():
             print(f"PDF file not found at {pdf_path}!")
             return None
