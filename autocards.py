@@ -237,6 +237,7 @@ be used for your input.")
         "Take text as input and create qa pairs"
         text = text.replace('\xad ', '')
         text = text.strip()
+        self.title = title
 
         if per_paragraph:
             print("Consuming text by paragraph:")
@@ -341,6 +342,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
             print("Couldn't find title of the page")
             title = source
         title = title.strip()
+        self.title = title
 
         valid_sections = []  # remove text sections that are too short:
         for section in el:
@@ -487,19 +489,22 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
             raise Exception(response['error'])
         return response['result']
 
-    def to_anki(self, deckname="Autocards_export", tags="Autocards"):
+    def to_anki(self, deckname="Autocards_export", tags=[""]):
         "Export cards to anki using anki-connect addon"
         df = self.pandas_df()
         df["ID"] = [str(int(x)+1) for x in list(df.index)]
         columns = df.columns.tolist()
         columns.remove("ID")
+        tags.append(f"Autocards::{self.title.replace(' ', '_')}")
+        with suppress(ValueError):
+            tags.remove("")
 
         # model formatting
         note_list = []
         for entry in df.index:
             note_list.append({"deckName": deckname,
                               "modelName": "Autocards",
-                              "tags": [tags],
+                              "tags": tags,
                               "fields": df.loc[entry, :].to_dict()
                               })
 

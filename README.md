@@ -48,7 +48,7 @@ All arguments are mentioned with their default value, you don't have to supply t
 
        *pprint stands for pretty printing*
 
-    * `a.to_anki(deckname="autocards_export", tags="some_tag")`
+    * `a.to_anki(deckname="autocards_export", tags=["some_tag"])`
     * `df = a.pandas_df(prefix='')`
     * `a.to_csv("output.csv", prefix="")`
     * `a.to_json("output.json", prefix="")`
