@@ -28,9 +28,9 @@ All arguments are mentioned with their default value, you don't have to supply t
 * consuming input text is done using one of the following ways:
     * `a.consume_var(my_text, per_paragraph=True)`
     * `a.consume_user_input(title="")`
-    * `a.consume_textfile(filename, per_paragraph=True)`
-    * `a.consume_pdf(pdf_path, per_paragraph=True)`
-    * `a.consume_web(source, mode="url", element="p")`
+    * `a.consume_textfile(path_to_file, per_paragraph=True)`
+    * `a.consume_pdf(path_to_file, per_paragraph=True)`
+    * `a.consume_web(link_or_path, mode="url", element="p")`
 
        *mode can be "url" or "local"*
 
