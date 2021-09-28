@@ -48,6 +48,8 @@ class Autocards:
         if in_lang == "any":  # otherwise the user might thought that the
             in_lang = "en"    # input has to be in english
         if in_lang != "en":
+            print("The document will automatically be translated before \
+creating flashcards. Expect lower quality cards than usual.")
             try:
                 print("Loading input translation model...")
                 from transformers import pipeline
@@ -58,6 +60,9 @@ class Autocards:
                 print("Resetting input language to english.")
                 in_lang = "en"
         if out_lang != "en":
+            print("The flashcards will be automatically translated after being \
+created. This can result in lower quality cards. Expect lowest quality cards \
+than usual.")
             try:
                 print("Loading output translation model...")
                 from transformers import pipeline
