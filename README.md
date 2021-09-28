@@ -14,7 +14,7 @@
 - `pip install -r ./requirements.txt`
 - install punkt by running `python -m nltk.downloader punkt`
 - open a python console: `ipython3`
-- read the [autocards usage guide below](#Autocards-usage)
+- read the [usage guide below](#usage)
 
 ### Autocards usage
 
