@@ -16,32 +16,41 @@
 - open a python console: `ipython3`
 - read the [usage guide below](#usage)
 
-### Autocards usage
+## usage
+All arguments are mentioned with their default value, you don't have to supply them every time.
 
-```
-# loading
-from autocards import Autocards
-a = Autocards(in_lang="any", out_lang="ru")  # translation modules sometimes need to be downloaded and can be rather large
+* initialization
+    * `from autocards import Autocards`
+    * `a = Autocards(in_lang="any", out_lang="ru")`
 
-# eating the input text using one of the following ways:
-a.consume_var(my_text, per_paragraph=True)
-a.consume_user_input(title="")
-a.consume_textfile(filename, per_paragraph=True)
-a.consume_pdf(pdf_path, per_paragraph=True)
-a.consume_web(source, mode="url", element="p")
-# =>  * element is the html element, like p for paragraph
-#     * mode can be "url" or "local"
+       *translation modules sometimes need to be downloaded and can be rather large*
 
-# three ways to get the results back: printing, pandas, export
-out = a.string_output(prefix='', jeopardy=False)
-#    =>  * prefix is a text that will be appended before the qa
-#        * jeopardy is when switching question and answer
-a.print(prefix='', jeopardy=False)
-a.pprint(prefix='', jeopardy=False)  # pretty printing
-df = a.pandas_df(prefix='')
-a.to_csv("output.csv", prefix="")
-a.to_json("output.json", prefix="")
-a.to_anki(deckname="autocards_export", tags="some_tag")
+* consuming input text is done using one of the following ways:
+    * `a.consume_var(my_text, per_paragraph=True)`
+    * `a.consume_user_input(title="")`
+    * `a.consume_textfile(filename, per_paragraph=True)`
+    * `a.consume_pdf(pdf_path, per_paragraph=True)`
+    * `a.consume_web(source, mode="url", element="p")`
 
-# Also note that a user provided his own terrible scripts that you can get inspiration from, they are located in the folder `examples_script`
-```
+       *mode can be "url" or "local"*
+
+       *element is the html element, like p for paragraph*
+
+* different ways to get the results back
+    * `out = a.string_output(prefix='', jeopardy=False)`
+
+       *prefix is a text that will be appended before the qa*
+
+       *jeopardy is when switching question and answer*
+
+    * `a.print(prefix='', jeopardy=False)`
+    * `a.pprint(prefix='', jeopardy=False)`
+
+       *pretty printing*
+
+    * `a.to_anki(deckname="autocards_export", tags="some_tag")`
+    * `df = a.pandas_df(prefix='')`
+    * `a.to_csv("output.csv", prefix="")`
+    * `a.to_json("output.json", prefix="")`
+
+    *Also note that a user provided his own scripts that you can get inspiration from, they are a bit outdated but can be found in the folder `examples_script`*
