@@ -9,7 +9,7 @@
 ## How to:
 
 - `git clone https://github.com/paulbricman/autocards`
-- `cd Autocards`
+- `cd autocards`
 - `pip install -r ./requirements.txt`
 - install punkt by running `python -m nltk.downloader punkt`
 - open a python console: `ipython3`
