@@ -39,14 +39,14 @@ All arguments are mentioned with their default value, you don't have to supply t
 * different ways to get the results back:
     * `out = a.string_output(prefix='', jeopardy=False)`
 
-       *prefix is a text that will be appended before the qa*
+       *prefix is a text that will be appended before the question & answer*
 
-       *jeopardy is when switching question and answer*
+       *jeopardy is for swapping question and answer*
 
     * `a.print(prefix='', jeopardy=False)`
     * `a.pprint(prefix='', jeopardy=False)`
 
-       *pretty printing*
+       *pprint stands for pretty printing*
 
     * `a.to_anki(deckname="autocards_export", tags="some_tag")`
     * `df = a.pandas_df(prefix='')`
