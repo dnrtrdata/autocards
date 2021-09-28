@@ -19,7 +19,7 @@
 ## Usage:
 All arguments are mentioned with their default value, you don't have to supply them every time.
 
-* initialization
+* initialization:
     * `from autocards import Autocards`
     * `a = Autocards(in_lang="any", out_lang="ru")`
 
@@ -36,7 +36,7 @@ All arguments are mentioned with their default value, you don't have to supply t
 
        *element is the html element, like p for paragraph*
 
-* different ways to get the results back
+* different ways to get the results back:
     * `out = a.string_output(prefix='', jeopardy=False)`
 
        *prefix is a text that will be appended before the qa*
