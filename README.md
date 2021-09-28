@@ -8,7 +8,7 @@
 
 ## How to:
 
-- `git clone https//github.com/Psionica/Autocards`
+- `git clone https://github.com/paulbricman/autocards`
 - `cd Autocards`
 - `pip install -r ./requirements.txt`
 - install punkt by running `python -m nltk.downloader punkt`
