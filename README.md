@@ -11,8 +11,9 @@
 - `git clone https//github.com/Psionica/Autocards`
 - `cd Autocards`
 - `pip install -r ./requirements.txt`
+- install punkt by running `python -m nltk.downloader punkt`
 - open a python console: `ipython3`
-- install punkt by running `!python -m nltk.downloader punkt`
+- read the [autocards usage guide below](#Autocards-usage)
 
 ### Autocards usage
 
