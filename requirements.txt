@@ -6,6 +6,5 @@ requests == 2.24.0
 torch == 1.8.1
 tqdm == 4.55.1
 transformers == 4.6.1
-wikipedia == 1.4.0
 epub-conversion == 1.0.15
 xml_cleaner == 2.0.4
