@@ -8,6 +8,7 @@
 
 ## How to:
 
+- This has been tested on python 3.9 but will probably work on earlier versions as well.
 - `git clone https://github.com/paulbricman/autocards`
 - `cd autocards`
 - `pip install -r ./requirements.txt`
