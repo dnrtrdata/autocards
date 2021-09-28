@@ -191,7 +191,7 @@ be used for your input.")
                         match.extend(re.findall(r"{{c\d+::(.*?)}}",
                                                 to_add_cloze[i+1]["cloze"]))
                         clean_cloze = re.sub(r"{{c\d+::|}}", "",
-                                            to_add_cloze[i]["cloze"])
+                                             to_add_cloze[i]["cloze"])
                         if "" in match:
                             match.remove("")
                         match = list(set(match))
@@ -282,7 +282,7 @@ after preprocessing the text yourself.")
         text = open(filepath).read()
         text = self._sanitize_text(text)
         filename = str(filepath).split("/")[-1]
-        if per_paragraph is False and len(text)>300:
+        if per_paragraph is False and len(text) > 300:
             ans = input("The text is more than 300 characters long, \
 are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
             if ans != "n":
@@ -391,8 +391,8 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
     def _combine_df_columns(self, row, col_names):
         combined = ""
         for col in col_names:
-            combined += f"{col.upper()}: {dict(row)[col]}\n"
-        return "#"*15 + "Combined columns:\n" + combined + "#"*15
+            combined += f"{col.upper()}: {dict(row)[col]}<br>\n"
+        return "#"*15 + "Combined columns:<br>\n" + combined + "#"*15
 
     def pandas_df(self, prefix=''):
         if len(self.qa_dic_list) == 0:
@@ -485,28 +485,36 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         "Export cards to anki using anki-connect addon"
         df = self.pandas_df()
         df["ID"] = [str(int(x)+1) for x in list(df.index)]
+        columns = df.columns.tolist()
+        columns.remove("ID")
 
+        # model formatting
         note_list = []
         for entry in df.index:
             note_list.append({"deckName": deckname,
                               "modelName": "Autocards",
-                              "tags": tags,
+                              "tags": [tags],
                               "fields": df.loc[entry, :].to_dict()
                               })
 
         template_content = [{"Front": "",
                              "Back": ""}]
 
+        # send new card type to anki
         try:
             self._ankiconnect_invoke(action="createModel",
                                      modelName="Autocards",
-                                     inOrderFields=["ID"] + list(df.columns).remove("ID"),
+                                     inOrderFields=["ID"] + columns,
                                      cardTemplates=template_content)
         except Exception as e:
             print(f"{e}")
 
+        # create new deck
         self._ankiconnect_invoke(action="createDeck", deck=deckname)
+
+        # send notes to anki
         out = self._ankiconnect_invoke(action="addNotes", notes=note_list)
+
         if list(set(out)) != [None]:
             print("Cards sent to anki collection.\nYou can now open anki and use \
     'change note type' to export the fields you need to your prefered notetype.")
