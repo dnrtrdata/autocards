@@ -7,7 +7,7 @@
 - Code is PEP compliant and with docstrings. Contributions and PR are extremely appreciated.
 - Learn more by reading [the official write-up](https://paulbricman.com/thoughtware/autocards).
 
-## Install guide:
+## How to:
 
 - `git clone https//github.com/Psionica/Autocards`
 - `cd Autocards`
