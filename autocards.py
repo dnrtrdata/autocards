@@ -473,7 +473,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
                                         'http://localhost:8765',
                                         requestJson)))
         except (ConnectionRefusedError, urllib.error.URLError) as e:
-            print(f"{e}: is Anki open and ankiconnect enabled?")
+            print(f"{e}: is Anki open? Is the addon 'anki-connect' enabled?")
             raise SystemExit()
         if len(response) != 2:
             raise Exception('response has an unexpected number of fields')
