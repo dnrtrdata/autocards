@@ -9,6 +9,7 @@
 - To see a real world example, the complete output of [this article](https://www.biography.com/political-figure/philip-ii-of-macedon) can be found [in this folder](./output_example/). It's the direct output with no post processing whatsoever.
 - Code is PEP compliant and with docstrings. Contributions and PR are extremely appreciated
 - Learn more by reading [the official write-up](https://paulbricman.com/thoughtware/autocards).
+=======
 
 ## Install guide:
 
