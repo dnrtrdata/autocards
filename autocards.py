@@ -523,7 +523,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
 
         if list(set(out)) != [None]:
             print("Cards sent to anki collection.\nYou can now open anki and use \
-    'change note type' to export the fields you need to your prefered notetype.")
+'change note type' to export the fields you need to your prefered notetype.")
             return out
         else:
             print("An error happened.")
