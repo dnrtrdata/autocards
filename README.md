@@ -21,7 +21,7 @@ All arguments are mentioned with their default value, you don't have to supply t
 
 * initialization:
     * `from autocards import Autocards`
-    * `a = Autocards(in_lang="any", out_lang="ru")`
+    * `a = Autocards(in_lang="en", out_lang="en")`
 
        *translation modules sometimes need to be downloaded and can be rather large*
 
