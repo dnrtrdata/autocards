@@ -150,7 +150,7 @@ could be made from that text: '{text}'")
                         cl_str_ut = cl_str_ut.replace("<hl> ", "{{c1::", 1)
                         cl_str_ut = cl_str_ut.replace(" <hl>", "}}", 1)
                         cl_str_ut = cl_str_ut.replace(" </s>", "")
-                        cl_str_ut.strip()
+                        cl_str_ut = cl_str_ut.strip()
                         to_add_cloze[i]["cloze_orig"] = cl_str_ut
 
                         cl_str = to_add_cloze[i]["cloze"]
@@ -171,7 +171,7 @@ could be made from that text: '{text}'")
                         cl_str = cl_str.replace("<hl> ", "{{c1::", 1)
                         cl_str = cl_str.replace(" <hl>", "}}", 1)
                         cl_str = cl_str.replace(" </s>", "")
-                        cl_str.strip()
+                        cl_str = cl_str.strip()
                         to_add_cloze[i]["cloze"] = cl_str
 
                     to_add_cloze[i]["basic_in_clozed_format"] = ""
@@ -339,7 +339,7 @@ are you sure you don't want to try to split the text by paragraph?\n(y/n)>")
         if title == "":
             print("Couldn't find title of the page")
             title = source
-        title.strip()
+        title = title.strip()
 
         valid_sections = []  # remove text sections that are too short:
         for section in el:
